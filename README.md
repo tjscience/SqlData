@@ -4,17 +4,17 @@ SQL Data is an ORM for C# to SQL without any of the bloat. If you have used ORMs
 
 Here are some of the features included in SQL Data:
 
-Manages SQL connections in an intuitive manner
-Execute statements directly against the database without returning results
-Query and return a collection CLR classes
-Query and return dynamic results
-Query and return a scalar result
-Handle CRUD operations through intuitive extension methods on your classes
-You can do bulk inserts of any IList<> with one line of code!
-and much more...
+* Manages SQL connections in an intuitive manner
+* Execute statements directly against the database without returning results
+* Query and return a collection CLR classes
+* Query and return dynamic results
+* Query and return a scalar result
+* Handle CRUD operations through intuitive extension methods on your classes
+* You can do bulk inserts of any IList<> with one line of code!
+* and much more...
 
 Here are some of the things that SQL Data does NOT do:
 
-Generate classes based on database schema
-Handle concurrency
-Slow you down!
+* Generate classes based on database schema
+* Handle concurrency
+* Slow you down!
