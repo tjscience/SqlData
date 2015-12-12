@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sql", "SqlData\Sql.csproj", "{DF743014-5A6A-439E-BA1C-376B641BCAEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sql.TestEntities", "Sql.TestEntities\Sql.TestEntities.csproj", "{8FCE87BD-06D8-43C8-9C6F-657051AF3314}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Util", "Util\Util.csproj", "{3C9B4774-A6A7-4E17-B2A9-9D959BBB2859}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sql.Test", "Sql.Test\Sql.Test.csproj", "{9174095E-A913-4802-B3C5-A60905C9E687}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs20
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = SqlData\\Sql.csproj
+		SccProjectName1 = SqlData
+		SccLocalPath1 = SqlData
+		SccProjectUniqueName2 = Sql.TestEntities\\Sql.TestEntities.csproj
+		SccProjectName2 = Sql.TestEntities
+		SccLocalPath2 = Sql.TestEntities
+		SccProjectUniqueName3 = Util\\Util.csproj
+		SccProjectName3 = Util
+		SccLocalPath3 = Util
+		SccProjectUniqueName4 = Sql.Test\\Sql.Test.csproj
+		SccProjectName4 = Sql.Test
+		SccLocalPath4 = Sql.Test
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DF743014-5A6A-439E-BA1C-376B641BCAEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF743014-5A6A-439E-BA1C-376B641BCAEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF743014-5A6A-439E-BA1C-376B641BCAEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF743014-5A6A-439E-BA1C-376B641BCAEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FCE87BD-06D8-43C8-9C6F-657051AF3314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FCE87BD-06D8-43C8-9C6F-657051AF3314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FCE87BD-06D8-43C8-9C6F-657051AF3314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FCE87BD-06D8-43C8-9C6F-657051AF3314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C9B4774-A6A7-4E17-B2A9-9D959BBB2859}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C9B4774-A6A7-4E17-B2A9-9D959BBB2859}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C9B4774-A6A7-4E17-B2A9-9D959BBB2859}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C9B4774-A6A7-4E17-B2A9-9D959BBB2859}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9174095E-A913-4802-B3C5-A60905C9E687}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9174095E-A913-4802-B3C5-A60905C9E687}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9174095E-A913-4802-B3C5-A60905C9E687}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9174095E-A913-4802-B3C5-A60905C9E687}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
