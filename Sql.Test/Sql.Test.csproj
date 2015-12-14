@@ -69,10 +69,6 @@
       <Project>{df743014-5a6a-439e-ba1c-376b641bcaef}</Project>
       <Name>Sql</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Util\Util.csproj">
-      <Project>{3c9b4774-a6a7-4e17-b2a9-9d959bbb2859}</Project>
-      <Name>Util</Name>
-    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

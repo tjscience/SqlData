@@ -893,6 +893,7 @@ namespace Sql
             #region Get Table Name
             var tName = (Name)type.GetCustomAttributes(false).SingleOrDefault(x => x is Name);
             var tableName = tName == null ? type.Name : tName.name;
+            tableName = string.Format("[{0}]", tableName);
             #endregion Get Table Name
 
             var dt = data.ToDataTable();
@@ -914,12 +915,27 @@ namespace Sql
             PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
             DataTable table = new DataTable();
             foreach (PropertyDescriptor prop in properties)
-                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+            {
+                var pInfo = prop.ComponentType.GetProperty(prop.Name);
+
+                if (!pInfo.IsIgnore() && !pInfo.IsReadOnly())
+                {
+                    table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+                }
+            }
+
             foreach (T item in data)
             {
                 DataRow row = table.NewRow();
                 foreach (PropertyDescriptor prop in properties)
-                    row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
+                {
+                    var pInfo = prop.ComponentType.GetProperty(prop.Name);
+
+                    if (!pInfo.IsIgnore() && !pInfo.IsReadOnly())
+                    {
+                        row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
+                    }
+                }
                 table.Rows.Add(row);
             }
             return table;
