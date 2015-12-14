@@ -255,6 +255,7 @@ ALTER TABLE [dbo].[OrderProduct] CHECK CONSTRAINT [FK_OrderProduct_Product]";
             });
             user.Delete();
             Assert.AreEqual(TotalUserCount(), 998);
+            Sql.Data.Store.
         }
     }
 }
