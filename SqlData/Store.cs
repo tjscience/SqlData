@@ -69,7 +69,6 @@ namespace Sql
         #region Current SQL Query
 
         private string currentSqlQuery = string.Empty;
-
         public string CurrentSqlQuery
         {
             get { return currentSqlQuery; }
@@ -175,6 +174,7 @@ namespace Sql
 
             if (type.IsValueType || type == typeof(string))
             {
+                #region T is a Value Type or String
                 // The type is a simple value type or string. We do not need the complext activator.
                 using (SqlConnection conn = new SqlConnection(connectionStr))
                 {
@@ -189,7 +189,7 @@ namespace Sql
 
                         using (var reader = sqlCommand.ExecuteReader())
                         {
-                            var map = GetPropertyMap<T>(reader);
+                            var map = GetPropertyMap<T>(reader, false);
 
                             while (reader.Read())
                             {
@@ -201,11 +201,15 @@ namespace Sql
                         }
                     }
                 }
+                #endregion T is a Value Type or String
             }
             else
             {
+                #region T is a Complex Type
                 // get activator
                 var activator = ObjectGenerator<T>();
+
+                var isIgnoreAll = type.Is<IgnoreAll>();
 
                 using (SqlConnection conn = new SqlConnection(connectionStr))
                 {
@@ -220,7 +224,7 @@ namespace Sql
 
                         using (var reader = sqlCommand.ExecuteReader())
                         {
-                            var map = GetPropertyMap<T>(reader);
+                            var map = GetPropertyMap<T>(reader, isIgnoreAll);
 
                             while (reader.Read())
                             {
@@ -228,13 +232,6 @@ namespace Sql
 
                                 foreach (var property in map)
                                 {
-                                    // do not populate ignore properties
-                                    if (property.Key.IsIgnore())
-                                        continue;
-
-                                    if (!HasColumn(reader, property.Key.Name))
-                                        continue;
-
                                     var item = reader[property.Value];
                                     var realType = Nullable.GetUnderlyingType(property.Key.PropertyType) ?? property.Key.PropertyType;
                                     var value = Convert.IsDBNull(item) ? null : Convert.ChangeType(item, realType);
@@ -246,6 +243,7 @@ namespace Sql
                         }
                     }
                 }
+                #endregion T is a Complex Type
             }
         }
 
@@ -270,6 +268,7 @@ namespace Sql
 
             if (type.IsValueType || type == typeof(string))
             {
+                #region T is a Value Type or String
                 // The type is a simple value type or string. We do not need the complext activator.
                 using (SqlConnection conn = new SqlConnection(connectionStr))
                 {
@@ -284,7 +283,7 @@ namespace Sql
 
                         using (var reader = sqlCommand.ExecuteReader())
                         {
-                            var map = GetPropertyMap<T>(reader);
+                            var map = GetPropertyMap<T>(reader, false);
 
                             while (reader.Read())
                             {
@@ -296,9 +295,13 @@ namespace Sql
                         }
                     }
                 }
+                #endregion T is a Value Type or String
             }
             else
             {
+                #region T is a Complex Type
+                var isIgnoreAll = type.Is<IgnoreAll>();
+
                 using (SqlConnection conn = new SqlConnection(connectionStr))
                 {
                     using (var sqlCommand = new SqlCommand(command.Query, conn))
@@ -312,7 +315,7 @@ namespace Sql
 
                         using (var reader = sqlCommand.ExecuteReader())
                         {
-                            var map = GetPropertyMap<T>(reader);
+                            var map = GetPropertyMap<T>(reader, isIgnoreAll);
 
                             while (reader.Read())
                             {
@@ -320,10 +323,6 @@ namespace Sql
 
                                 foreach (var property in map)
                                 {
-                                    // do not populate ignore properties
-                                    if (property.Key.IsIgnore())
-                                        continue;
-
                                     var item = reader[property.Value];
                                     var value = Convert.IsDBNull(item) ? null : item;
                                     property.Key.SetValue(instance, value, null);
@@ -334,6 +333,7 @@ namespace Sql
                         }
                     }
                 }
+                #endregion T is a Complex Type
             }
         }
 
@@ -556,12 +556,17 @@ namespace Sql
                         }
                         else
                         {
+                            var isIgnoreAll = type.Is<IgnoreAll>();
                             result = (T)Activator.CreateInstance(type, true);
+
                             // read the data from the row into each property in the type
                             foreach (var pInfo in type.GetProperties())
                             {
                                 // do not populate ignored properties
-                                if (pInfo.IsIgnore())
+                                if (pInfo.Is<Ignore>())
+                                    continue;
+
+                                if (isIgnoreAll && !pInfo.Is<Include>() && !pInfo.Is<Key>())
                                     continue;
 
                                 if (!HasColumn(reader, pInfo.Name))
@@ -624,12 +629,17 @@ namespace Sql
                         }
                         else
                         {
+                            var isIgnoreAll = type.Is<IgnoreAll>();
                             result = (T)Activator.CreateInstance(type, true);
+
                             // read the data from the row into each property in the type
                             foreach (var pInfo in type.GetProperties())
                             {
                                 // do not populate ignored properties
-                                if (pInfo.IsIgnore())
+                                if (pInfo.Is<Ignore>())
+                                    continue;
+
+                                if (isIgnoreAll && !pInfo.Is<Include>() && !pInfo.Is<Key>())
                                     continue;
 
                                 if (!HasColumn(reader, pInfo.Name))
@@ -744,18 +754,19 @@ namespace Sql
             var sql = "SELECT {Columns} FROM [{Table}]";
             var columns = new StringBuilder();
 
+            var isIgnoreAll = type.Is<IgnoreAll>();
             var first = true;
+
             foreach (var pInfo in type.GetProperties())
             {
-                if (pInfo.IsIgnore())
-                {
+                if (pInfo.Is<Ignore>())
                     continue;
-                }
+
+                if (isIgnoreAll && !pInfo.Is<Include>() && !pInfo.Is<Key>())
+                    continue;
 
                 if (!first)
-                {
                     columns.Append(",");
-                }
 
                 var name = pInfo.Name;
                 columns.Append(string.Format("[{0}]", name));
@@ -776,7 +787,7 @@ namespace Sql
             });
         }
 
-        private Dictionary<PropertyInfo, int> GetPropertyMap<T>(System.Data.IDataReader reader)
+        private Dictionary<PropertyInfo, int> GetPropertyMap<T>(IDataReader reader, bool isClassIgnoreAll)
         {
             var type = typeof(T);
 
@@ -784,8 +795,16 @@ namespace Sql
             var map = new Dictionary<PropertyInfo, int>();
             foreach (var pInfo in type.GetProperties())
             {
-                if (pInfo.IsIgnore())
+                if (pInfo.Is<Ignore>())
                     continue;
+                // do not populate property on a class that is marked IgnoreAll
+                // unless the property is marked with include
+                if (isClassIgnoreAll && !pInfo.Is<Include>() && !pInfo.Is<Key>())
+                    continue;
+
+                if (!HasColumn(reader, pInfo.Name))
+                    continue;
+
                 map.Add(pInfo, reader.GetOrdinal(pInfo.Name));
             }
 
@@ -872,7 +891,7 @@ namespace Sql
             return sb.ToString();
         }
 
-        public static bool HasColumn(DbDataReader Reader, string ColumnName)
+        public static bool HasColumn(IDataReader Reader, string ColumnName)
         {
             foreach (DataRow row in Reader.GetSchemaTable().Rows)
             {
@@ -912,16 +931,26 @@ namespace Sql
 
         private static DataTable ToDataTable<T>(this IList<T> data)
         {
+            var type = typeof(T);
             PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
             DataTable table = new DataTable();
+
+            var isIgnoreAll = type.Is<IgnoreAll>();
+
             foreach (PropertyDescriptor prop in properties)
             {
                 var pInfo = prop.ComponentType.GetProperty(prop.Name);
 
-                if (!pInfo.IsIgnore() && !pInfo.IsReadOnly())
-                {
-                    table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
-                }
+                if (pInfo.Is<Ignore>())
+                    continue;
+
+                if (pInfo.Is<ReadOnly>())
+                    continue;
+
+                if (isIgnoreAll && !pInfo.Is<Include>() && !pInfo.Is<Key>())
+                    continue;
+
+                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
             }
 
             foreach (T item in data)
@@ -931,10 +960,16 @@ namespace Sql
                 {
                     var pInfo = prop.ComponentType.GetProperty(prop.Name);
 
-                    if (!pInfo.IsIgnore() && !pInfo.IsReadOnly())
-                    {
-                        row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
-                    }
+                    if (pInfo.Is<Ignore>())
+                        continue;
+
+                    if (pInfo.Is<ReadOnly>())
+                        continue;
+
+                    if (isIgnoreAll && !pInfo.Is<Include>() && !pInfo.Is<Key>())
+                        continue;
+
+                    row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
                 }
                 table.Rows.Add(row);
             }

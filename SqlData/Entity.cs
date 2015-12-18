@@ -59,17 +59,22 @@ namespace Sql
             var parameters = new List<Parameter>();
 
             var first = true;
+
+            var isIgnoreAll = entityType.Is<IgnoreAll>();
+
             foreach (var pInfo in entityType.GetProperties())
             {
-                if (pInfo.IsKey())
+                if (pInfo.Is<Key>())
                 {
                     primaryKey = pInfo.Name;
                     continue;
                 }
-                if (pInfo.IsIgnore() || pInfo.IsReadOnly())
-                {
+
+                if (pInfo.Is<Ignore>() || pInfo.Is<ReadOnly>())
                     continue;
-                }
+
+                if (isIgnoreAll && !pInfo.Is<Include>() && !pInfo.Is<Key>())
+                    continue;
 
                 if (!first)
                 {
@@ -137,19 +142,24 @@ namespace Sql
             var parameters = new List<Parameter>();
 
             var first = true;
+
+            var isIgnoreAll = entityType.Is<IgnoreAll>();
+
             foreach (var pInfo in entityType.GetProperties())
             {
                 // do not insert key
-                if (pInfo.IsKey())
+                if (pInfo.Is<Key>())
                 {
                     primaryKey = pInfo.Name;
                     parameters.Add(Parameter.Create("Id", pInfo.GetValue(this, null)));
                     continue;
                 }
-                if (pInfo.IsIgnore() || pInfo.IsReadOnly())
-                {
+
+                if (pInfo.Is<Ignore>() || pInfo.Is<ReadOnly>())
                     continue;
-                }
+
+                if (isIgnoreAll && !pInfo.Is<Include>() && !pInfo.Is<Key>())
+                    continue;
 
                 if (!first)
                 {
@@ -214,7 +224,7 @@ namespace Sql
 
             foreach (var pInfo in entityType.GetProperties())
             {
-                if (pInfo.IsKey())
+                if (pInfo.Is<Key>())
                 {
                     // we found the key which is all we need, now break 
                     primaryKey = pInfo.Name;

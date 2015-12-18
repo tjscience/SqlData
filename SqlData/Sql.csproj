@@ -47,6 +47,8 @@
     <Compile Include="Command.cs" />
     <Compile Include="DataAttributes\Connection.cs" />
     <Compile Include="DataAttributes\Ignore.cs" />
+    <Compile Include="DataAttributes\IgnoreAll.cs" />
+    <Compile Include="DataAttributes\Include.cs" />
     <Compile Include="DataAttributes\Key.cs" />
     <Compile Include="DataAttributes\Name.cs" />
     <Compile Include="DataAttributes\ReadOnly.cs" />
@@ -59,6 +61,7 @@
     <Compile Include="PropertInfoExtensions.cs" />
     <Compile Include="Store.cs" />
     <Compile Include="StringExtensions.cs" />
+    <Compile Include="TypeExtensions.cs" />
     <Compile Include="ValidationResult.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
