@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SqlData</id>
-    <version>$version$</version>
+    <version>1.0.7</version>
     <title>SqlData</title>
     <authors>Terry Phillips</authors>
     <owners>Terry Phillips</owners>
