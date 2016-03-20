@@ -9,6 +9,12 @@ namespace Sql
     {
         public string Query { get; set; }
         public string Connection { get; set; }
+        private int timeout = 30;
+        public int Timeout
+        {
+            get { return timeout; }
+            set { timeout = value; } 
+        }
         private List<Parameter> parameters = new List<Parameter>();
         public List<Parameter> Parameters
         {

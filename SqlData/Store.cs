@@ -128,6 +128,7 @@ namespace Sql
             {
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
+                    sqlCommand.CommandTimeout = command.Timeout;
                     conn.Open();
 
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
@@ -179,6 +180,7 @@ namespace Sql
                 {
                     using (var sqlCommand = new SqlCommand(command.Query, conn))
                     {
+                        sqlCommand.CommandTimeout = command.Timeout;
                         conn.Open();
 
                         BuildParameterList(sqlCommand, command.Parameters.ToArray());
@@ -214,6 +216,7 @@ namespace Sql
                 {
                     using (var sqlCommand = new SqlCommand(command.Query, conn))
                     {
+                        sqlCommand.CommandTimeout = command.Timeout;
                         conn.Open();
 
                         BuildParameterList(sqlCommand, command.Parameters.ToArray());
@@ -273,6 +276,7 @@ namespace Sql
                 {
                     using (var sqlCommand = new SqlCommand(command.Query, conn))
                     {
+                        sqlCommand.CommandTimeout = command.Timeout;
                         conn.Open();
 
                         BuildParameterList(sqlCommand, command.Parameters.ToArray());
@@ -305,6 +309,7 @@ namespace Sql
                 {
                     using (var sqlCommand = new SqlCommand(command.Query, conn))
                     {
+                        sqlCommand.CommandTimeout = command.Timeout;
                         conn.Open();
 
                         BuildParameterList(sqlCommand, command.Parameters.ToArray());
@@ -377,6 +382,7 @@ namespace Sql
             {
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
+                    sqlCommand.CommandTimeout = command.Timeout;
                     conn.Open();
 
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
@@ -480,6 +486,7 @@ namespace Sql
             {
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
+                    sqlCommand.CommandTimeout = command.Timeout;
                     conn.Open();
 
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
@@ -536,6 +543,7 @@ namespace Sql
             {
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
+                    sqlCommand.CommandTimeout = command.Timeout;
                     conn.Open();
 
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
@@ -609,6 +617,7 @@ namespace Sql
             {
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
+                    sqlCommand.CommandTimeout = command.Timeout;
                     conn.Open();
 
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
@@ -705,6 +714,7 @@ namespace Sql
             {
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
+                    sqlCommand.CommandTimeout = command.Timeout;
                     conn.Open();
 
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
