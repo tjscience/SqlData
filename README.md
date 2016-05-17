@@ -1,5 +1,5 @@
 #SQL Data
-
+### Available on nuget https://www.nuget.org/packages/SqlData/
 SQL Data is an ORM for C# to SQL without any of the bloat. If you have used ORMs in the past like Entity Framework or NHibernate, you may have noticed that they are ridiculously huge. The reason is that they have much more, sometimes unnecessary, functionality included. If you are using one of these ORMs and are utilizing all of this functionality, then SQL Data is not a good fit. Sql Data is designed to be extremely light weight. The number one goal of this ORM is to allow the developer to obtain data from a SQL database and use this data in strongly typed classes, and do it fast! To put it simply, SQL Data allows you to get data from a SQL database easily, quickly and efficiently.
 
 ####Here are some of the features included in SQL Data:
