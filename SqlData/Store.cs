@@ -848,6 +848,17 @@ namespace Sql
                         var p = new SqlParameter(parameter.Name, parameter.Value);
                         if (parameter.Value == null)
                             p.Value = DBNull.Value;
+
+                        if (parameter.Type != null)
+                        {
+                            p.SqlDbType = parameter.Type.Value;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(parameter.TypeName))
+                        {
+                            p.TypeName = parameter.TypeName;
+                        }
+
                         command.Parameters.Add(p);
                     }
                     else

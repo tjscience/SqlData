@@ -11,6 +11,8 @@ namespace Sql
             get { return parse; }
             set { parse = value; }
         }
+        public System.Data.SqlDbType? Type { get; set; }
+        public string TypeName { get; set; }
 
         public Parameter()
         {
