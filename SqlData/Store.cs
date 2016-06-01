@@ -87,6 +87,16 @@ namespace Sql
             connections.Add(name, connectionString);
         }
 
+        public string GetConnection(string name)
+        {
+            return connections[name];
+        }
+
+        public string GetConnection()
+        {
+            return DefaultConnection.Value;
+        }
+
         public bool ContainsConnection(string name)
         {
             return connections.ContainsKey(name);
@@ -142,6 +152,45 @@ namespace Sql
         }
 
         #endregion Query
+
+        #region QueryToDataTable
+
+        /// <summary>
+        /// Queries a result set into a DataTable.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns>A DataTable filled with the query results.</returns>
+        public DataTable QueryToDataTable(Command command)
+        {
+            // get the correct connection information
+            var connectionStr = command.Connection == null ? DefaultConnection.Value : connections[command.Connection];
+
+            if (command.Style == Command.CommandStyle.StoredProcedure)
+                command.Query = GenerateStoredProcedureQuery(command.Query, command.Parameters);
+
+            using (SqlConnection conn = new SqlConnection(connectionStr))
+            {
+                using (var sqlCommand = new SqlCommand(command.Query, conn))
+                {
+                    sqlCommand.CommandTimeout = command.Timeout;
+                    conn.Open();
+
+                    BuildParameterList(sqlCommand, command.Parameters.ToArray());
+
+                    if (GenerateQueryText)
+                        GenerateSqlQuery(sqlCommand);
+
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand))
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        return dt;
+                    }
+                }
+            }
+        }
+
+        #endregion QueryToDataTable
 
         #region Query<T>
 
