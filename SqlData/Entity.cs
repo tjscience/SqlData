@@ -248,5 +248,33 @@ namespace Sql
 
             return validationResult;
         }
+
+        public static string EntityName
+        {
+            get
+            {
+                Type type = typeof(T);
+                var tName = (Name)type.GetCustomAttributes(false).SingleOrDefault(x => x is Name);
+                return tName == null ? type.Name : tName.name;
+            }
+        }
+
+        public static string Key
+        {
+            get
+            {
+                Type type = typeof(T);
+
+                foreach (var pInfo in type.GetProperties())
+                {
+                    if (pInfo.Is<Key>())
+                    {
+                        return pInfo.Name;
+                    }
+                }
+
+                return null;
+            }
+        }
     }
 }
