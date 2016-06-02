@@ -153,7 +153,7 @@ ALTER TABLE [dbo].[OrderProduct] CHECK CONSTRAINT [FK_OrderProduct_Product]";
             // Here we create the database if it does not exist.
             // We also clear out any data so that we can start the test with a fresh clean db.
             // This connection string should point to master of a MSSQL Server instance.
-            /*var master = @"Server=.\SQLEXPRESS;Database=master;Trusted_Connection=True;";
+            var master = @"Server=.\SQLEXPRESS;Database=master;Trusted_Connection=True;";
             Sql.Data.Store.AddConnection("master", master);
             // check if db exists
             var dbExists = Sql.Data.Store.Scalar<bool>(new Command { Connection = "master", Query = CheckDBExists });
@@ -168,7 +168,7 @@ ALTER TABLE [dbo].[OrderProduct] CHECK CONSTRAINT [FK_OrderProduct_Product]";
             Sql.Data.Store.AddConnection("testDB", sqlDataTestDB);
 
             // recreate tables
-            Sql.Data.Store.Query(new Command { Connection = "testDB", Query = CreateTables });*/
+            Sql.Data.Store.Query(new Command { Connection = "testDB", Query = CreateTables });
         }
 
         public int TotalUserCount()
@@ -255,19 +255,6 @@ ALTER TABLE [dbo].[OrderProduct] CHECK CONSTRAINT [FK_OrderProduct_Product]";
             });
             user.Delete();
             Assert.AreEqual(TotalUserCount(), 998);
-        }
-
-        [TestMethod]
-        public void GetEntityName()
-        {
-            var user = new User
-            {
-                UserId = 9,
-                FirstName = "Test",
-                LastName = "User"
-            };
-
-            var entityName = user.EntityName;
         }
     }
 }
