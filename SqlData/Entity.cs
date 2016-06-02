@@ -42,8 +42,15 @@ namespace Sql
             }
 
             var entityType = this.GetType();
-            var tableName = this.EntityName;
+            var tableName = string.Empty;
+
             var connection = Data.Store.GetConnectionNameForType(entityType);
+
+            #region Get Table Name
+            var tName = (Name)entityType.GetCustomAttributes(false).SingleOrDefault(x => x is Name);
+            tableName = tName == null ? entityType.Name : tName.name;
+            #endregion Get Table Name
+
             var sql = "INSERT INTO [{Table}] ({Columns}) VALUES ({Values}); SELECT TOP 1 {PrimaryKey},{Columns} FROM [{Table}] WHERE [{PrimaryKey}] = SCOPE_IDENTITY();";
             var primaryKey = string.Empty;
             var columns = new StringBuilder();
@@ -119,8 +126,15 @@ namespace Sql
             }
 
             var entityType = this.GetType();
-            var tableName = this.EntityName;
+            var tableName = string.Empty;
+
             var connection = Data.Store.GetConnectionNameForType(entityType);
+
+            #region Get Table Name
+            var tName = (Name)entityType.GetCustomAttributes(false).SingleOrDefault(x => x is Name);
+            tableName = tName == null ? entityType.Name : tName.name;
+            #endregion Get Table Name
+
             var sql = "UPDATE [{Table}] SET {Columns} WHERE [{PrimaryKey}] = @Id; SELECT TOP 1 {PrimaryKey},{Columns} FROM [{Table}] WHERE [{PrimaryKey}] = @Id;";
             var primaryKey = string.Empty;
             var columns = new StringBuilder();
@@ -194,8 +208,15 @@ namespace Sql
             }
 
             var entityType = this.GetType();
-            var tableName = this.EntityName;
+            var tableName = string.Empty;
+
             var connection = Data.Store.GetConnectionNameForType(entityType);
+
+            #region Get Table Name
+            var tName = (Name)entityType.GetCustomAttributes(false).SingleOrDefault(x => x is Name);
+            tableName = tName == null ? entityType.Name : tName.name;
+            #endregion Get Table Name
+
             var sql = "DELETE FROM [{Table}] WHERE [{PrimaryKey}] = @Id;";
             var primaryKey = string.Empty;
             var parameters = new List<Parameter>();
@@ -226,34 +247,6 @@ namespace Sql
             });
 
             return validationResult;
-        }
-
-        public string EntityName
-        {
-            get
-            {
-                Type type = this.GetType();
-                var tName = (Name)type.GetCustomAttributes(false).SingleOrDefault(x => x is Name);
-                return tName == null ? type.Name : tName.name;
-            }
-        }
-
-        public string Key
-        {
-            get
-            {
-                Type type = this.GetType();
-
-                foreach (var pInfo in type.GetProperties())
-                {
-                    if (pInfo.Is<Key>())
-                    {
-                        return pInfo.Name;
-                    }
-                }
-
-                return null;
-            }
         }
     }
 }
