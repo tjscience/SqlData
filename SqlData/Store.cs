@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -221,9 +222,9 @@ namespace Sql
             if (command.Style == Command.CommandStyle.StoredProcedure)
                 command.Query = GenerateStoredProcedureQuery(command.Query, command.Parameters);
 
-            if (type.IsValueType || type == typeof(string))
+            if (type.IsValueType)
             {
-                #region T is a Value Type or String
+                #region T is a Value Type
                 // The type is a simple value type or string. We do not need the complext activator.
                 using (SqlConnection conn = new SqlConnection(connectionStr))
                 {
@@ -239,11 +240,10 @@ namespace Sql
 
                         using (var reader = sqlCommand.ExecuteReader())
                         {
-                            var map = GetPropertyMap<T>(reader, false);
-
                             while (reader.Read())
                             {
-                                var instance = (T)Activator.CreateInstance(type, true);
+                                var instance = (T)System.Runtime.Serialization.FormatterServices
+                                    .GetUninitializedObject(type);
                                 var item = reader[0];
                                 instance = Convert.IsDBNull(item) ? default(T) : (T)item;
                                 yield return instance;
@@ -251,7 +251,39 @@ namespace Sql
                         }
                     }
                 }
-                #endregion T is a Value Type or String
+                #endregion T is a Value Type
+            }
+            else if (type == typeof(string))
+            {
+                #region T is a String
+                // The type is a simple value type or string. We do not need the complext activator.
+                using (SqlConnection conn = new SqlConnection(connectionStr))
+                {
+                    using (var sqlCommand = new SqlCommand(command.Query, conn))
+                    {
+                        sqlCommand.CommandTimeout = command.Timeout;
+                        conn.Open();
+
+                        BuildParameterList(sqlCommand, command.Parameters.ToArray());
+
+                        if (GenerateQueryText)
+                            GenerateSqlQuery(sqlCommand);
+
+                        using (var reader = sqlCommand.ExecuteReader())
+                        {
+                            TypeConverter converter = TypeDescriptor.GetConverter(type);
+
+                            while (reader.Read())
+                            {
+                                var instance = string.Empty;
+                                var item = reader[0];
+                                instance = Convert.IsDBNull(item) ? string.Empty : item.ToString();
+                                yield return (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, instance);
+                            }
+                        }
+                    }
+                }
+                #endregion T is a String
             }
             else
             {

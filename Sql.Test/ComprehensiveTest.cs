@@ -256,5 +256,25 @@ ALTER TABLE [dbo].[OrderProduct] CHECK CONSTRAINT [FK_OrderProduct_Product]";
             user.Delete();
             Assert.AreEqual(TotalUserCount(), 998);
         }
+
+        [TestMethod]
+        public void QueryListOfStrings()
+        {
+            var userFirstNames = Sql.Data.Store.Query<string>(new Command
+            {
+                Connection = "testDB",
+                Query = "select FirstName from [User];"
+            }).ToList();
+        }
+
+        [TestMethod]
+        public void QueryListOfIntegers()
+        {
+            var userIds = Sql.Data.Store.Query<int>(new Command
+            {
+                Connection = "testDB",
+                Query = "select UserId from [User];"
+            }).ToList();
+        }
     }
 }
