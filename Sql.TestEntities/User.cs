@@ -16,6 +16,8 @@ namespace Sql.TestEntities
         public string FirstName { get; set; }
         [Include]
         public string LastName { get; set; }
+        [Include]
+        public string LowerCaseColumn { get; set; }
         [Ignore]
         public string FullName
         {

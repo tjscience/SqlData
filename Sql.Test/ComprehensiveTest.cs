@@ -115,6 +115,7 @@ CREATE TABLE [dbo].[User](
 	[UserId] [int] IDENTITY(1,1) NOT NULL,
 	[FirstName] [varchar](50) NOT NULL,
 	[LastName] [varchar](50) NOT NULL,
+    [lowercasecolumn] [varchar](50) NOT NULL,
  CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
 (
 	[UserId] ASC
@@ -191,7 +192,8 @@ ALTER TABLE [dbo].[OrderProduct] CHECK CONSTRAINT [FK_OrderProduct_Product]";
                 users.Add(new User
                 {
                     FirstName = "First" + i,
-                    LastName = "Last" + i
+                    LastName = "Last" + i,
+                    LowerCaseColumn = "lower case " + i
                 });
             }
 
@@ -275,6 +277,16 @@ ALTER TABLE [dbo].[OrderProduct] CHECK CONSTRAINT [FK_OrderProduct_Product]";
                 Connection = "testDB",
                 Query = "select UserId from [User];"
             }).ToList();
+        }
+
+        [TestMethod]
+        public void QueryScalarIgnoreCase()
+        {
+            var firstUser = Sql.Data.Store.Scalar<User>(new Command
+            {
+                Connection = "testDB",
+                Query = "select * from [User] order by UserId;"
+            });
         }
     }
 }

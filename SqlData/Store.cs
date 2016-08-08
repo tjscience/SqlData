@@ -646,25 +646,20 @@ namespace Sql
                         {
                             var isIgnoreAll = type.Is<IgnoreAll>();
                             result = (T)Activator.CreateInstance(type, true);
+                            var ordinalDictionary = type.GetOrdinalValuesFromDataReader(reader);
 
                             // read the data from the row into each property in the type
                             foreach (var pInfo in type.GetProperties())
                             {
-                                // do not populate ignored properties
-                                if (pInfo.Is<Ignore>())
-                                    continue;
+                                int ordinal = 0;
 
-                                if (isIgnoreAll && !pInfo.Is<Include>() && !pInfo.Is<Key>())
-                                    continue;
-
-                                if (!HasColumn(reader, pInfo.Name))
-                                    continue;
-
-                                // get the value that matches the property name
-                                var item = reader[pInfo.Name];
-                                var realType = Nullable.GetUnderlyingType(pInfo.PropertyType) ?? pInfo.PropertyType;
-                                var value = Convert.IsDBNull(item) ? null : Convert.ChangeType(item, realType);
-                                DataCache.Cache.GetSetter<T>(pInfo)(result, value);
+                                if (ordinalDictionary.TryGetValue(pInfo.Name, out ordinal))
+                                {
+                                    var item = reader.GetValue(ordinal);
+                                    var realType = Nullable.GetUnderlyingType(pInfo.PropertyType) ?? pInfo.PropertyType;
+                                    var value = Convert.IsDBNull(item) ? null : Convert.ChangeType(item, realType);
+                                    DataCache.Cache.GetSetter<T>(pInfo)(result, value);
+                                }
                             }
                         }
                     }
@@ -720,24 +715,19 @@ namespace Sql
                         {
                             var isIgnoreAll = type.Is<IgnoreAll>();
                             result = (T)Activator.CreateInstance(type, true);
+                            var ordinalDictionary = type.GetOrdinalValuesFromDataReader(reader);
 
                             // read the data from the row into each property in the type
                             foreach (var pInfo in type.GetProperties())
                             {
-                                // do not populate ignored properties
-                                if (pInfo.Is<Ignore>())
-                                    continue;
+                                int ordinal = 0;
 
-                                if (isIgnoreAll && !pInfo.Is<Include>() && !pInfo.Is<Key>())
-                                    continue;
-
-                                if (!HasColumn(reader, pInfo.Name))
-                                    continue;
-
-                                // get the value that matches the property name
-                                var item = reader[pInfo.Name];
-                                var value = Convert.IsDBNull(item) ? null : item;
-                                pInfo.SetValue(result, value, null);
+                                if (ordinalDictionary.TryGetValue(pInfo.Name, out ordinal))
+                                {
+                                    var item = reader.GetValue(ordinal);
+                                    var value = Convert.IsDBNull(item) ? null : item;
+                                    pInfo.SetValue(result, value, null);
+                                }
                             }
                         }
                     }
