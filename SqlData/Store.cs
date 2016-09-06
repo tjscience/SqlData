@@ -147,7 +147,11 @@ namespace Sql
                     if (GenerateQueryText)
                         GenerateSqlQuery(sqlCommand);
 
-                    return sqlCommand.ExecuteNonQuery();
+                    var result = sqlCommand.ExecuteNonQuery();
+
+                    PopulateParameters(sqlCommand, command.Parameters.ToArray());
+
+                    return result;
                 }
             }
         }
@@ -185,6 +189,7 @@ namespace Sql
                     {
                         DataTable dt = new DataTable();
                         adapter.Fill(dt);
+                        PopulateParameters(sqlCommand, command.Parameters.ToArray());
                         return dt;
                     }
                 }
@@ -240,6 +245,8 @@ namespace Sql
 
                         using (var reader = sqlCommand.ExecuteReader())
                         {
+                            PopulateParameters(sqlCommand, command.Parameters.ToArray());
+
                             while (reader.Read())
                             {
                                 var instance = (T)System.Runtime.Serialization.FormatterServices
@@ -272,6 +279,8 @@ namespace Sql
                         using (var reader = sqlCommand.ExecuteReader())
                         {
                             TypeConverter converter = TypeDescriptor.GetConverter(type);
+
+                            PopulateParameters(sqlCommand, command.Parameters.ToArray());
 
                             while (reader.Read())
                             {
@@ -308,6 +317,8 @@ namespace Sql
                         using (var reader = sqlCommand.ExecuteReader())
                         {
                             var map = GetPropertyMap<T>(reader, isIgnoreAll);
+
+                            PopulateParameters(sqlCommand, command.Parameters.ToArray());
 
                             while (reader.Read())
                             {
@@ -369,6 +380,8 @@ namespace Sql
                         {
                             var map = GetPropertyMap<T>(reader, false);
 
+                            PopulateParameters(sqlCommand, command.Parameters.ToArray());
+
                             while (reader.Read())
                             {
                                 var instance = Activator.CreateInstance<T>();
@@ -401,6 +414,8 @@ namespace Sql
                         using (var reader = sqlCommand.ExecuteReader())
                         {
                             var map = GetPropertyMap<T>(reader, isIgnoreAll);
+
+                            PopulateParameters(sqlCommand, command.Parameters.ToArray());
 
                             while (reader.Read())
                             {
@@ -476,7 +491,10 @@ namespace Sql
                         var result = (IDictionary<string, object>)new ExpandoObject();
                         var schemas = new List<dynamic>();
 
+                        PopulateParameters(sqlCommand, command.Parameters.ToArray());
+
                         int count = 1;
+
                         do
                         {
                             var results = new List<dynamic>();
@@ -577,6 +595,8 @@ namespace Sql
 
                     using (SqlDataReader reader = sqlCommand.ExecuteReader())
                     {
+                        PopulateParameters(sqlCommand, command.Parameters.ToArray());
+
                         while (reader.Read())
                         {
                             dynamic item = new ExpandoObject();
@@ -633,6 +653,8 @@ namespace Sql
                         GenerateSqlQuery(sqlCommand);
 
                     var reader = sqlCommand.ExecuteReader();
+
+                    PopulateParameters(sqlCommand, command.Parameters.ToArray());
 
                     // only fetch first row
                     if (reader.Read())
@@ -702,6 +724,8 @@ namespace Sql
                         GenerateSqlQuery(sqlCommand);
 
                     var reader = sqlCommand.ExecuteReader();
+
+                    PopulateParameters(sqlCommand, command.Parameters.ToArray());
 
                     // only fetch first row
                     if (reader.Read())
@@ -795,6 +819,8 @@ namespace Sql
 
                     using (SqlDataReader reader = sqlCommand.ExecuteReader())
                     {
+                        PopulateParameters(sqlCommand, command.Parameters.ToArray());
+
                         if (reader.Read())
                         {
                             dynamic item = new ExpandoObject();
@@ -917,8 +943,11 @@ namespace Sql
                     if (parameter.Parse)
                     {
                         var p = new SqlParameter(parameter.Name, parameter.Value);
+
                         if (parameter.Value == null)
+                        {
                             p.Value = DBNull.Value;
+                        }
 
                         if (parameter.Type != null)
                         {
@@ -930,12 +959,32 @@ namespace Sql
                             p.TypeName = parameter.TypeName;
                         }
 
+                        if (parameter.Direction != null)
+                        {
+                            p.Direction = parameter.Direction.Value;
+                        }
+
                         command.Parameters.Add(p);
                     }
                     else
                     {
                         // We do not want to parse the parameter, just replace it with the value.
                         command.CommandText = command.CommandText.Replace("@" + parameter.Name, (string)parameter.Value);
+                    }
+                }
+            }
+        }
+
+        private void PopulateParameters(SqlCommand command, Parameter[] parameters)
+        {
+            foreach (var parameter in parameters.Where(x => x.Direction == ParameterDirection.Output))
+            {
+                foreach (SqlParameter p in command.Parameters)
+                {
+                    if (p.ParameterName == parameter.Name)
+                    {
+                        parameter.Value = p.Value;
+                        break;
                     }
                 }
             }
@@ -975,7 +1024,16 @@ namespace Sql
             var strings = new List<string>();
 
             foreach (var parameter in parameters)
-                strings.Add("@" + parameter.Name);
+            {
+                if (parameter.Direction == ParameterDirection.Output)
+                {
+                    strings.Add("@" + parameter.Name + " OUTPUT");
+                }
+                else
+                {
+                    strings.Add("@" + parameter.Name);
+                }
+            }
 
             sb.Append(string.Join(", ", strings));
 

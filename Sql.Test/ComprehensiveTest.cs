@@ -144,7 +144,22 @@ ALTER TABLE [dbo].[OrderProduct]  WITH CHECK ADD  CONSTRAINT [FK_OrderProduct_Pr
 REFERENCES [dbo].[Product] ([ProductId])
 
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_OrderProduct_Product]') AND parent_object_id = OBJECT_ID(N'[dbo].[OrderProduct]'))
-ALTER TABLE [dbo].[OrderProduct] CHECK CONSTRAINT [FK_OrderProduct_Product]";
+ALTER TABLE [dbo].[OrderProduct] CHECK CONSTRAINT [FK_OrderProduct_Product]
+";
+        public const string DropReturnTrueSP =
+@"IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'ReturnTrue') AND type IN ( N'P', N'PC' )) 
+BEGIN
+    DROP PROCEDURE [dbo].[ReturnTrue];
+END
+";
+        public const string CreateReturnTrueSP =
+@"
+CREATE PROCEDURE [dbo].[ReturnTrue]
+@Value bit OUTPUT
+AS
+BEGIN
+    SET @Value = 1;
+END";
 
         #endregion Queries
 
@@ -170,6 +185,9 @@ ALTER TABLE [dbo].[OrderProduct] CHECK CONSTRAINT [FK_OrderProduct_Product]";
 
             // recreate tables
             Sql.Data.Store.Query(new Command { Connection = "testDB", Query = CreateTables });
+            // create SPs
+            Sql.Data.Store.Query(new Command { Connection = "testDB", Query = DropReturnTrueSP });
+            Sql.Data.Store.Query(new Command { Connection = "testDB", Query = CreateReturnTrueSP });
         }
 
         public int TotalUserCount()
@@ -287,6 +305,25 @@ ALTER TABLE [dbo].[OrderProduct] CHECK CONSTRAINT [FK_OrderProduct_Product]";
                 Connection = "testDB",
                 Query = "select * from [User] order by UserId;"
             });
+        }
+
+        [TestMethod]
+        public void QueryOutputParameter()
+        {
+            var parameter = new Parameter();
+            parameter.Name = "Value";
+            parameter.Direction = System.Data.ParameterDirection.Output;
+            parameter.Type = System.Data.SqlDbType.Bit;
+
+            Sql.Data.Store.Query(new Command
+            {
+                Connection = "testDB",
+                Style = Command.CommandStyle.StoredProcedure,
+                Query = "[dbo].[ReturnTrue]",
+                Parameters = Command.AddParameters(parameter)
+            });
+
+            Assert.IsTrue((bool)parameter.Value);
         }
     }
 }

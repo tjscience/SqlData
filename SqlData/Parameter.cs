@@ -13,6 +13,7 @@ namespace Sql
         }
         public System.Data.SqlDbType? Type { get; set; }
         public string TypeName { get; set; }
+        public System.Data.ParameterDirection? Direction { get; set; }
 
         public Parameter()
         {
