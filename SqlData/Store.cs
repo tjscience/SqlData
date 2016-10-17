@@ -132,6 +132,12 @@ namespace Sql
             // get the correct connection information
             var connectionStr = command.Connection == null ? DefaultConnection.Value : connections[command.Connection];
 
+            // Handle null parameters
+            if (command.Parameters == null)
+            {
+                command.Parameters = new List<Sql.Parameter>();
+            }
+
             if (command.Style == Command.CommandStyle.StoredProcedure)
                 command.Query = GenerateStoredProcedureQuery(command.Query, command.Parameters);
 
@@ -169,6 +175,12 @@ namespace Sql
         {
             // get the correct connection information
             var connectionStr = command.Connection == null ? DefaultConnection.Value : connections[command.Connection];
+
+            // Handle null parameters
+            if (command.Parameters == null)
+            {
+                command.Parameters = new List<Sql.Parameter>();
+            }
 
             if (command.Style == Command.CommandStyle.StoredProcedure)
                 command.Query = GenerateStoredProcedureQuery(command.Query, command.Parameters);
@@ -447,6 +459,12 @@ namespace Sql
         /// <returns></returns>
         public IEnumerable<T> Query<T>(Command command)
         {
+            // Handle null parameters
+            if (command.Parameters == null)
+            {
+                command.Parameters = new List<Sql.Parameter>();
+            }
+
             if (IsPartialTrust)
                 return QueryInternalWithPartialTrust<T>(command);
             else
@@ -469,6 +487,12 @@ namespace Sql
             {
                 // get the correct connection information
                 connectionStr = connections[command.Connection];
+            }
+
+            // Handle null parameters
+            if (command.Parameters == null)
+            {
+                command.Parameters = new List<Sql.Parameter>();
             }
 
             if (command.Style == Command.CommandStyle.StoredProcedure)
@@ -576,6 +600,12 @@ namespace Sql
             {
                 // get the correct connection information
                 connectionStr = connections[command.Connection];
+            }
+
+            // Handle null parameters
+            if (command.Parameters == null)
+            {
+                command.Parameters = new List<Sql.Parameter>();
             }
 
             if (command.Style == Command.CommandStyle.StoredProcedure)
@@ -771,6 +801,12 @@ namespace Sql
         /// <returns>A scalar result</returns>
         public T Scalar<T>(Command command)
         {
+            // Handle null parameters
+            if (command.Parameters == null)
+            {
+                command.Parameters = new List<Sql.Parameter>();
+            }
+
             if (IsPartialTrust)
                 return ScalarInternalWithPartialTrust<T>(command);
             else
@@ -800,6 +836,12 @@ namespace Sql
             {
                 // get the correct connection information
                 connectionStr = connections[command.Connection];
+            }
+
+            // Handle null parameters
+            if (command.Parameters == null)
+            {
+                command.Parameters = new List<Sql.Parameter>();
             }
 
             if (command.Style == Command.CommandStyle.StoredProcedure)
