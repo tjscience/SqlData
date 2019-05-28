@@ -143,11 +143,12 @@ namespace Sql
 
             using (SqlConnection conn = new SqlConnection(connectionStr))
             {
+                conn.Open();
+                ExecuteSessionContext(command, conn);
+
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
                     sqlCommand.CommandTimeout = command.Timeout;
-                    conn.Open();
-
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                     if (GenerateQueryText)
@@ -187,11 +188,12 @@ namespace Sql
 
             using (SqlConnection conn = new SqlConnection(connectionStr))
             {
+                conn.Open();
+                ExecuteSessionContext(command, conn);
+
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
                     sqlCommand.CommandTimeout = command.Timeout;
-                    conn.Open();
-
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                     if (GenerateQueryText)
@@ -245,11 +247,12 @@ namespace Sql
                 // The type is a simple value type or string. We do not need the complext activator.
                 using (SqlConnection conn = new SqlConnection(connectionStr))
                 {
+                    conn.Open();
+                    ExecuteSessionContext(command, conn);
+
                     using (var sqlCommand = new SqlCommand(command.Query, conn))
                     {
                         sqlCommand.CommandTimeout = command.Timeout;
-                        conn.Open();
-
                         BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                         if (GenerateQueryText)
@@ -278,11 +281,12 @@ namespace Sql
                 // The type is a simple value type or string. We do not need the complext activator.
                 using (SqlConnection conn = new SqlConnection(connectionStr))
                 {
+                    conn.Open();
+                    ExecuteSessionContext(command, conn);
+
                     using (var sqlCommand = new SqlCommand(command.Query, conn))
                     {
                         sqlCommand.CommandTimeout = command.Timeout;
-                        conn.Open();
-
                         BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                         if (GenerateQueryText)
@@ -316,11 +320,12 @@ namespace Sql
 
                 using (SqlConnection conn = new SqlConnection(connectionStr))
                 {
+                    conn.Open();
+                    ExecuteSessionContext(command, conn);
+
                     using (var sqlCommand = new SqlCommand(command.Query, conn))
                     {
                         sqlCommand.CommandTimeout = command.Timeout;
-                        conn.Open();
-
                         BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                         if (GenerateQueryText)
@@ -378,11 +383,12 @@ namespace Sql
                 // The type is a simple value type or string. We do not need the complext activator.
                 using (SqlConnection conn = new SqlConnection(connectionStr))
                 {
+                    conn.Open();
+                    ExecuteSessionContext(command, conn);
+
                     using (var sqlCommand = new SqlCommand(command.Query, conn))
                     {
                         sqlCommand.CommandTimeout = command.Timeout;
-                        conn.Open();
-
                         BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                         if (GenerateQueryText)
@@ -413,11 +419,12 @@ namespace Sql
 
                 using (SqlConnection conn = new SqlConnection(connectionStr))
                 {
+                    conn.Open();
+                    ExecuteSessionContext(command, conn);
+
                     using (var sqlCommand = new SqlCommand(command.Query, conn))
                     {
                         sqlCommand.CommandTimeout = command.Timeout;
-                        conn.Open();
-
                         BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                         if (GenerateQueryText)
@@ -500,11 +507,12 @@ namespace Sql
 
             using (SqlConnection conn = new SqlConnection(connectionStr))
             {
+                conn.Open();
+                ExecuteSessionContext(command, conn);
+
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
                     sqlCommand.CommandTimeout = command.Timeout;
-                    conn.Open();
-
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                     if (GenerateQueryText)
@@ -613,11 +621,12 @@ namespace Sql
 
             using (SqlConnection conn = new SqlConnection(connectionStr))
             {
+                conn.Open();
+                ExecuteSessionContext(command, conn);
+
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
                     sqlCommand.CommandTimeout = command.Timeout;
-                    conn.Open();
-
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                     if (GenerateQueryText)
@@ -672,11 +681,12 @@ namespace Sql
 
             using (SqlConnection conn = new SqlConnection(connectionStr))
             {
+                conn.Open();
+                ExecuteSessionContext(command, conn);
+
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
                     sqlCommand.CommandTimeout = command.Timeout;
-                    conn.Open();
-
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                     if (GenerateQueryText)
@@ -743,11 +753,12 @@ namespace Sql
 
             using (SqlConnection conn = new SqlConnection(connectionStr))
             {
+                conn.Open();
+                ExecuteSessionContext(command, conn);
+
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
                     sqlCommand.CommandTimeout = command.Timeout;
-                    conn.Open();
-
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                     if (GenerateQueryText)
@@ -849,11 +860,12 @@ namespace Sql
 
             using (SqlConnection conn = new SqlConnection(connectionStr))
             {
+                conn.Open();
+                ExecuteSessionContext(command, conn);
+
                 using (var sqlCommand = new SqlCommand(command.Query, conn))
                 {
                     sqlCommand.CommandTimeout = command.Timeout;
-                    conn.Open();
-
                     BuildParameterList(sqlCommand, command.Parameters.ToArray());
 
                     if (GenerateQueryText)
@@ -1090,6 +1102,20 @@ namespace Sql
                     return true;
             } //Still here? Column not found. 
             return false;
+        }
+
+        private void ExecuteSessionContext(Command command, SqlConnection conn)
+        {
+            foreach (var variable in command.SessionContext)
+            {
+                var query = $"exec sys.sp_set_session_context @Key, @Value;";
+                using (var sqlCommand = new SqlCommand(command.Query, conn))
+                {
+                    sqlCommand.Parameters.Add(new SqlParameter("Key", variable.Key));
+                    sqlCommand.Parameters.Add(new SqlParameter("Value", variable.Value));
+                    sqlCommand.ExecuteNonQuery();
+                }
+            }
         }
     }
 

@@ -21,6 +21,8 @@ namespace Sql
             get { return parameters; }
             set { parameters = value; }
         }
+        // This is only available in SQL Server 2016+!
+        public Dictionary<string, object> SessionContext { get; } = new Dictionary<string, object>();
         private CommandStyle style = CommandStyle.Query;
         public CommandStyle Style
         {
