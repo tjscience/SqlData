@@ -22,7 +22,7 @@ namespace Sql
             set { parameters = value; }
         }
         // This is only available in SQL Server 2016+!
-        public Dictionary<string, object> SessionContext { get; } = new Dictionary<string, object>();
+        public Dictionary<string, object> SessionContext { get; set; } = new Dictionary<string, object>();
         private CommandStyle style = CommandStyle.Query;
         public CommandStyle Style
         {
