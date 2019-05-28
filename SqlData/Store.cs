@@ -1109,7 +1109,7 @@ namespace Sql
             foreach (var variable in command.SessionContext)
             {
                 var query = $"exec sys.sp_set_session_context @Key, @Value;";
-                using (var sqlCommand = new SqlCommand(command.Query, conn))
+                using (var sqlCommand = new SqlCommand(query, conn))
                 {
                     sqlCommand.Parameters.Add(new SqlParameter("Key", variable.Key));
                     sqlCommand.Parameters.Add(new SqlParameter("Value", variable.Value));
