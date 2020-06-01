@@ -1138,7 +1138,8 @@ namespace Sql
             {
                 conn.Open();
 
-                using (SqlBulkCopy copy = new SqlBulkCopy(conn))
+                using (SqlBulkCopy copy = new SqlBulkCopy(conn, SqlBulkCopyOptions.FireTriggers | SqlBulkCopyOptions.CheckConstraints,
+                    null))
                 {
                     copy.DestinationTableName = tableName;
                     copy.WriteToServer(dt);
